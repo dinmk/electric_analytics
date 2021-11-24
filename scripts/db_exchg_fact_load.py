@@ -40,10 +40,10 @@ WITH tbl_exchg AS (
     )
 UPDATE ANALYTICS_TR.TBL_EXCHANGE_RATE
 SET IS_CURRENT_ACTIVE ='FALSE'
+    , UPDATE_BATCH_JOB_ID = 'Apache Airflow'
+    , UPDATE_JOB_TIMESTAMP = NOW()    
 FROM tbl_exchg
-WHERE tbl_exchg.max_date < EXCHANGE_RATE_DATE;
-
-    ''')
+WHERE tbl_exchg.max_date > EXCHANGE_RATE_DATE;''')
 connection.commit()
 cur.close()
 connection.close()

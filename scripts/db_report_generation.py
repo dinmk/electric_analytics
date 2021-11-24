@@ -8,9 +8,24 @@ connection = psycopg2.connect(dbname='osftlpak',
                                     host='abul.db.elephantsql.com', 
                                     password='A7WCXtwaF3vz5PXm5G8C57YG3CWHn2_b',
                                     connect_timeout=1,
-                                    options='-c search_path=RAW_TR'
+                                    options='-c search_path=SALES_TR'
                                     )
 cur=connection.cursor()
+
+
+cur.execute('''CREATE OR REPLACE VIEW SALES_TR.V_PRODUCT_ANALYSIS
+AS
+SELECT  market
+      , product_identifier
+      , product_name
+      , product_purchase_price
+      , (product_purchase_price/exchange_rate_value) AS purchase_price_nok
+      , installation AS IS_INSTALLATION_REQUIRED
+FROM analytics_tr.tbl_product pdct
+LEFT JOIN ANALYTICS_TR.TBL_EXCHANGE_RATE excgh
+        ON (pdct.product_local_currency = target_currency_key)
+WHERE excgh.is_current_active = 'TRUE';''')
+connection.commit()
 
 #Create a query returning the top-3 most expensive products
 #that do not require the installation service and can be bought in Norway.
